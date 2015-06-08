@@ -10,7 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bytebuffer": "^3.5.4",
     "coffee-script": "^1.9.3",
-    "tentacle-protocol-buffer": "git@github.com:octoblu/tentacle-protocol-buffer.git#master"
+    "lodash": "^3.9.3",
+    "tentacle-protocol-buffer": "git@github.com:octoblu/tentacle-protocol-buffer.git#master",
+    "through": "^2.3.7"
   }
 }

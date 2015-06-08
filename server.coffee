@@ -1,11 +1,19 @@
 net = require 'net'
+_ = require 'lodash'
+through = require 'through'
+
 MicrobluTransformer = require 'tentacle-protocol-buffer'
-tentacleTranslator = new MicrobluTransformer message: 'MicrobluState', format: 'binary'
+
 server = net.createServer (client) =>
   console.log 'client connected.'
-  client.on 'data', (data) =>
-    tentacleTranslator.toJSON data, (err, msg)=>
-      console.log("msg is: #{JSON.stringify(msg)}")
+  tentacleTransformer = new MicrobluTransformer()
+
+  client.pipe(through((chunk) =>
+    tentacleTransformer.addData(chunk)
+    while (decoded = tentacleTransformer.toJSON())
+      console.log 'while looping with decoded = ', JSON.stringify(decoded,null,2)
+  )).on 'data', (data) =>
+    console.log "data: #{data}"
 
   client.on 'end', (data) =>
     console.log "end: #{data}"
