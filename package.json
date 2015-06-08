@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "coffee-script": "^1.9.3",
-    "stream-to-buffer": "^0.1.0"
+    "tentacle-protocol-buffer": "git@github.com:octoblu/tentacle-protocol-buffer.git#master"
   }
 }
