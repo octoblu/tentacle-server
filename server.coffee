@@ -10,8 +10,11 @@ server = net.createServer (client) =>
 
   client.pipe(through((chunk) =>
     tentacleTransformer.addData(chunk)
-    while (decoded = tentacleTransformer.toJSON())
-      console.log 'while looping with decoded = ', JSON.stringify(decoded,null,2)
+    try
+      while (decoded = tentacleTransformer.toJSON())
+        console.log 'while looping with decoded = ', JSON.stringify(decoded,null,2)
+    catch error
+      client.end()
   )).on 'data', (data) =>
     console.log "data: #{data}"
 
