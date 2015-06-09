@@ -2,11 +2,11 @@ net = require 'net'
 _ = require 'lodash'
 through = require 'through'
 
-MicrobluTransformer = require 'tentacle-protocol-buffer'
+TentacleTransformer = require 'tentacle-protocol-buffer'
 
 server = net.createServer (client) =>
   console.log 'client connected.'
-  tentacleTransformer = new MicrobluTransformer()
+  tentacleTransformer = new TentacleTransformer()
 
   client.pipe(through((chunk) =>
     tentacleTransformer.addData(chunk)
