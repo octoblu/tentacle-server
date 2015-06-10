@@ -13,7 +13,16 @@ server = net.createServer (client) =>
     try
       while (decoded = tentacleTransformer.toJSON())
         console.log 'while looping with decoded = ', JSON.stringify(decoded,null,2)
+        msg = topic: 'config', pins: [ { number: 5, value: 4 } ]
+
+        console.log "bytes written before: #{client.bytesWritten}"
+        client.write( tentacleTransformer.toProtocolBuffer(msg) )
+        client.write '\0'
+
+        console.log "bytes written after: #{client.bytesWritten}"
+
     catch error
+      console.log "I got this error: #{error.message}"
       client.end()
   )).on 'data', (data) =>
     console.log "data: #{data}"
