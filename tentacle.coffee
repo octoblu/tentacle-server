@@ -9,40 +9,51 @@ class Tentacle
     @tentacleTransformer = new TentacleTransformer()
     @socket = socket
 
-  addData: (data) =>
-    @tentacleTransformer.addData data
-
   start: =>
     @meshbluConn = Meshblu.createConnection meshbluJSON
+
     @meshbluConn.on 'ready', => console.log "I'm ready!"
+
+    @meshbluConn.on('config', (msg) =>
+      @configureDevice msg.options, (error, response) =>
+        return @handleError(error) if error?
+
     @meshbluConn.on 'message', (msg) =>
-      @sendMessageToMicroblu msg.payload
+      @messageDevice msg.payload, (error, response) =>
+        return @handleError(error) if error?
 
-    @socket.pipe(through( (chunk) =>
-      console.log 'adding data'
-      @addData chunk
-      @sendMessageToMeshblu()
-    )).on 'data', (data) =>
-      console.log "data: #{data}"
+    @socket.pipe through( (chunk) =>
+        console.log 'adding data'
+        @tentacleTransformer.addData chunk
 
-    @socket.on 'end', (data) =>
-      @meshbluConn.close()
+        @getDeviceMessage (error, msg) =>
+          console.log 'sending message to meshblu'
+          return @handleError(error) if error?
+          @messageMeshblu msg
+    ))
 
-    @socket.on 'error', (error) =>
-      console.log 'client errored'
+    @socket.on 'end', (data) => @meshbluConn.close()
 
-  sendMessageToMeshblu: =>
-    try
-      while (message = @tentacleTransformer.toJSON())
-        console.log 'sending message to meshblu'
-        @meshbluConn.message( devices: '*',  payload: message )
+  getDeviceMessage: (callback) =>
+      try
+        while (msg = @tentacleTransformer.toJSON())
+          callback null, msg.pins
 
-    catch error
-      console.log "I got this error: #{error.message}"
-      @socket.end()
+      catch error
+        callback error
 
-  sendMessageToMicroblu: (msg) =>
-    @socket.write(@tentacleTransformer.toProtocolBuffer(msg))
+  messageMeshblu: (msg)=>
+    @meshbluConn.message devices: '*',  payload: msg
 
+  configureDevice: (config) =>
+    console.log 'config'
+    console.log JSON.stringify(config, null, 2)
+    @socket.write @tentacleTransformer.toProtocolBuffer( topic: 'config', pins: config.pins )
+
+  messageDevice: (msg) =>
+    @socket.write @tentacleTransformer.toProtocolBuffer topic: 'message', pins: msg
+
+  handleError: (error) =>
+    @socket.end()
 
 module.exports = Tentacle
