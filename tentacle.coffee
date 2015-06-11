@@ -19,6 +19,7 @@ class Tentacle
       @sendMessageToMicroblu msg.payload
 
     @socket.pipe(through( (chunk) =>
+      console.log 'adding data'
       @addData chunk
       @sendMessageToMeshblu()
     )).on 'data', (data) =>
