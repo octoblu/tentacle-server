@@ -12,7 +12,9 @@ class Tentacle
   start: =>
     @meshbluConn = Meshblu.createConnection meshbluJSON
 
-    @meshbluConn.on 'ready', => console.log "I'm ready!"
+    @meshbluConn.on 'ready', (device) =>
+       console.log "I'm ready!"
+       console.log JSON.stringify(device, null, 2)
 
     @meshbluConn.on('config', (msg) =>
       @configureDevice msg.options, (error, response) =>
@@ -32,6 +34,8 @@ class Tentacle
           @messageMeshblu msg
     ))
 
+    @socket.on 'error', (error)=> @handleError(error)
+
     @socket.on 'end', (data) => @meshbluConn.close()
 
   getDeviceMessage: (callback) =>
@@ -40,6 +44,7 @@ class Tentacle
           callback null, msg.pins
 
       catch error
+        console.log("getDeviceMessage errored with: #{error.message}")
         callback error
 
   messageMeshblu: (msg)=>

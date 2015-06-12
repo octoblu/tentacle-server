@@ -1,7 +1,7 @@
 {
   "options": {
     "pins": [
-      { "action" : "digitalRead", "number": 5}
+      { "action" : "digitalRead", "number": 2}
     ]
   }
 }
