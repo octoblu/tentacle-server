@@ -8,5 +8,4 @@ server = net.createServer (client) =>
   tentacle = new Tentacle(client)
   tentacle.start()
 
-server.listen 8111, =>
-  console.log "And we're up."
+server.listen 8111, => console.log "And we're up."

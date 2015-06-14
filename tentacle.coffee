@@ -5,31 +5,38 @@ meshbluJSON = require './meshblu.json'
 TentacleTransformer = require 'tentacle-protocol-buffer'
 
 class Tentacle
-  constructor: (socket) ->
+  constructor: (tentacleConnection) ->
     @tentacleTransformer = new TentacleTransformer()
-    @socket = socket
+    @tentacleConnection = tentacleConnection
+
+  start: =>
+    @meshbluConn = Meshblu.createConnection meshbluJSON
+    @meshbluConn.on 'ready',  @onMeshbluReady
+    @meshbluConn.on 'message', @onMeshbluMessage
+
+    @tentacleConnection.on 'error', @onMicrobluConnectionError
+    @tentacleConnection.on 'end', @onMicrobluConnectionClosed
+    @tentacleConnection.pipe through(@onMicrobluData)
+
+  onMeshbluReady: =>
+    console.log "I'm ready!"
+
+  onMeshbluMessage: (message) =>
+    @sendMessageToMicroblu message.payload
+
+  onMicrobluData: (chunk) =>
+    console.log 'adding data'
+    @addData chunk
+    @sendMessageToMeshblu()
 
   addData: (data) =>
     @tentacleTransformer.addData data
 
-  start: =>
-    @meshbluConn = Meshblu.createConnection meshbluJSON
-    @meshbluConn.on 'ready', => console.log "I'm ready!"
-    @meshbluConn.on 'message', (msg) =>
-      @sendMessageToMicroblu msg.payload
+  onMicrobluConnectionError: (error) =>
+    console.log 'client errored'
 
-    @socket.pipe(through( (chunk) =>
-      console.log 'adding data'
-      @addData chunk
-      @sendMessageToMeshblu()
-    )).on 'data', (data) =>
-      console.log "data: #{data}"
-
-    @socket.on 'end', (data) =>
-      @meshbluConn.close()
-
-    @socket.on 'error', (error) =>
-      console.log 'client errored'
+  onMicrobluConnectionClosed: (data) =>
+    @meshbluConn.close()
 
   sendMessageToMeshblu: =>
     try
@@ -39,10 +46,10 @@ class Tentacle
 
     catch error
       console.log "I got this error: #{error.message}"
-      @socket.end()
+      @tentacleConnection.end()
 
   sendMessageToMicroblu: (msg) =>
-    @socket.write(@tentacleTransformer.toProtocolBuffer(msg))
+    @tentacleConnection.write @tentacleTransformer.toProtocolBuffer(msg)
 
 
 module.exports = Tentacle
