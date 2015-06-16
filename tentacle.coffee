@@ -10,6 +10,7 @@ class Tentacle
     @tentacleConnection = tentacleConnection
 
   start: =>
+    console.log 'start called'
     @meshbluConn = Meshblu.createConnection meshbluJSON
     @meshbluConn.on 'ready',  @onMeshbluReady
     @meshbluConn.on 'message', @onMeshbluMessage
