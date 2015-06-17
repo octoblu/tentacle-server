@@ -1,2 +1,2 @@
 #!/bin/sh
-meshblu-util subscribe -u 3d5fe549-88d1-4c62-9b0a-4d53c53f6bf0 ./subscriber.json
+meshblu-util subscribe -u b9944342-b8c7-4ca6-9d3e-074eb4706264 ./subscriber.json

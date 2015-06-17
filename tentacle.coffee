@@ -1,30 +1,29 @@
-Meshblu = require 'meshblu'
+meshblu = require 'meshblu'
 through = require 'through'
 
-meshbluJSON = require './meshblu.json'
 TentacleTransformer = require 'tentacle-protocol-buffer'
 
 class Tentacle
-  constructor: (tentacleConnection) ->
+  constructor: (tentacleConn) ->
     @tentacleTransformer =
       new TentacleTransformer()
 
     @authenticationTransformer =
       new TentacleTransformer message: 'MeshbluAuthentication'
 
-    @tentacleConnection = tentacleConnection
+    @tentacleConn = tentacleConn
 
   start: =>
     console.log 'start called'
-    @meshbluConn = Meshblu.createConnection meshbluJSON
+
+    @tentacleConn.on 'error', @onMicrobluConnectionError
+    @tentacleConn.on 'end', @onMicrobluConnectionClosed
+    @tentacleConn.pipe through(@onMicrobluData)
+
+  listenToMeshbluMessages: =>
     @meshbluConn.on 'ready',  @onMeshbluReady
     @meshbluConn.on 'message', @onMeshbluMessage
     @meshbluConn.on 'config', @onMeshbluConfig
-
-    @tentacleConnection.on 'error', @onMicrobluConnectionError
-    @tentacleConnection.on 'end', @onMicrobluConnectionClosed
-    @tentacleConnection.pipe through(@onMicrobluMessageData)
-    @tentacleConnection.pipe through(@onMicrobluAuthenticationData)
 
   onMeshbluReady: =>
     console.log "I'm ready!"
@@ -37,19 +36,11 @@ class Tentacle
     console.log 'got message'
     @sendMessageToMicroblu topic: 'config', pins: config.options.pins
 
-  onMicrobluMessageData: (chunk) =>
-    return unless @meshbluCredentials?
-
-    console.log 'adding message data'
-    @tentacleTransformer.addData chunk
-    @sendMessageToMeshblu()
-
-  onMicrobluAuthenticationData: (chunk) =>
-    return if @meshbluCredentials?
-
-    console.log 'adding authentication data'
-    @authenticationTransformer.addData chunk
-    @authenticateWithMeshblu()
+  onMicrobluData: (data) =>
+    console.log "adding #{data.length} bytes from microblu"
+    @parseMicrobluMessage data
+    @tentacleTransformer.addData data
+    @parseMicrobluMessage()
 
   onMicrobluConnectionError: (error) =>
     console.log 'client errored'
@@ -59,24 +50,44 @@ class Tentacle
     console.log 'client closed the connection'
     @cleanup()
 
-  sendMessageToMeshblu: =>
+  parseMicrobluMessage: =>
     try
       while (message = @tentacleTransformer.toJSON())
-        console.log 'sending message to meshblu'
-
-        @meshbluConn.message( devices: '*',  payload: message )
+        console.log "I got the message"
+        console.log JSON.stringify(message, null, 2)
+        @messageMeshblu(message) if message.topic == 'action'
+        @authenticateWithMeshblu(message.authentication) if message.topic == 'authentication'
 
     catch error
       console.log "I got this error: #{error.message}"
       @cleanup()
 
+  messageMeshblu: (msg) =>
+    console.log "I'm supposed to be sending a message to meshblu"
+    return unless @meshbluConn?
+    console.log "I have a connection, so I'm sending it"
+    @meshbluConn.message '*', payload: msg
+
+  authenticateWithMeshblu: (credentials)=>
+      try
+        console.log "authenticating with credentials: #{JSON.stringify(credentials)}"
+        @meshbluConn = meshblu.createConnection(
+          "uuid":  credentials.uuid,
+          "token": credentials.token
+        )
+
+        @listenToMeshbluMessages()
+      catch error
+        console.log "I got this error: #{error.message}"
+        @cleanup()
+
   sendMessageToMicroblu: (msg) =>
     console.log 'sending message to microblu'
     console.log JSON.stringify(msg, null, 2)
-    @tentacleConnection.write @tentacleTransformer.toProtocolBuffer(msg)
+    @tentacleConn.write @tentacleTransformer.toProtocolBuffer(msg)
 
   cleanup: =>
-    @tentacleConn.destroy()
-    @meshbluConn.close()
+    @tentacleConn.destroy() if @tentacleConn?
+    @meshbluConn.close() if @meshbluConn?
 
 module.exports = Tentacle
