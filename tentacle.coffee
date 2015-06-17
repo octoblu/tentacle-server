@@ -21,9 +21,13 @@ class Tentacle
     @tentacleConn.pipe through(@onMicrobluData)
 
   listenToMeshbluMessages: =>
+    return if @alreadyListening
+    
     @meshbluConn.on 'ready',  @onMeshbluReady
     @meshbluConn.on 'message', @onMeshbluMessage
     @meshbluConn.on 'config', @onMeshbluConfig
+
+    @alreadyListening = true
 
   onMeshbluReady: =>
     console.log "I'm ready!"
@@ -68,7 +72,7 @@ class Tentacle
     console.log "I have a connection, so I'm sending it"
     @meshbluConn.message '*', payload: msg
 
-  authenticateWithMeshblu: (credentials)=>
+  authenticateWithMeshblu: (credentials) =>
       try
         console.log "authenticating with credentials: #{JSON.stringify(credentials)}"
         @meshbluConn = meshblu.createConnection(
