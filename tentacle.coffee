@@ -1,5 +1,6 @@
 meshblu = require 'meshblu'
 through = require 'through'
+debug   = require('debug')('meshblu:tentacle-server')
 
 TentacleTransformer = require 'tentacle-protocol-buffer'
 
@@ -14,7 +15,7 @@ class Tentacle
     @tentacleConn = tentacleConn
 
   start: =>
-    console.log 'start called'
+    debug 'start called'
 
     @tentacleConn.on 'error', @onMicrobluConnectionError
     @tentacleConn.on 'end', @onMicrobluConnectionClosed
@@ -22,7 +23,7 @@ class Tentacle
 
   listenToMeshbluMessages: =>
     return if @alreadyListening
-    
+
     @meshbluConn.on 'ready',  @onMeshbluReady
     @meshbluConn.on 'message', @onMeshbluMessage
     @meshbluConn.on 'config', @onMeshbluConfig
@@ -30,51 +31,52 @@ class Tentacle
     @alreadyListening = true
 
   onMeshbluReady: =>
-    console.log "I'm ready!"
+    debug "I'm ready!"
+    @meshbluConn.whoami {}, @onMeshbluConfig
 
   onMeshbluMessage: (message) =>
-    console.log 'got message'
+    debug 'got message'
     @sendMessageToMicroblu topic: 'action', message.payload
 
   onMeshbluConfig: (config) =>
-    console.log 'got message'
-    @sendMessageToMicroblu topic: 'config', pins: config.options.pins
+    debug "got config: \n#{JSON.stringify(config, null, true)}"
+    @sendMessageToMicroblu topic: 'config', pins: config?.options?.pins
 
   onMicrobluData: (data) =>
-    console.log "adding #{data.length} bytes from microblu"
+    debug "adding #{data.length} bytes from microblu"
     @parseMicrobluMessage data
     @tentacleTransformer.addData data
     @parseMicrobluMessage()
 
   onMicrobluConnectionError: (error) =>
-    console.log 'client errored'
+    debug 'client errored'
     @cleanup()
 
   onMicrobluConnectionClosed: (data) =>
-    console.log 'client closed the connection'
+    debug 'client closed the connection'
     @cleanup()
 
   parseMicrobluMessage: =>
     try
       while (message = @tentacleTransformer.toJSON())
-        console.log "I got the message"
-        console.log JSON.stringify(message, null, 2)
+        debug "I got the message"
+        debug JSON.stringify(message, null, 2)
         @messageMeshblu(message) if message.topic == 'action'
         @authenticateWithMeshblu(message.authentication) if message.topic == 'authentication'
 
     catch error
-      console.log "I got this error: #{error.message}"
+      debug "I got this error: #{error.message}"
       @cleanup()
 
   messageMeshblu: (msg) =>
-    console.log "I'm supposed to be sending a message to meshblu"
+    debug "I'm supposed to be sending a message to meshblu"
     return unless @meshbluConn?
-    console.log "I have a connection, so I'm sending it"
+    debug "I have a connection, so I'm sending it"
     @meshbluConn.message '*', payload: msg
 
   authenticateWithMeshblu: (credentials) =>
       try
-        console.log "authenticating with credentials: #{JSON.stringify(credentials)}"
+        debug "authenticating with credentials: #{JSON.stringify(credentials)}"
         @meshbluConn = meshblu.createConnection(
           "uuid":  credentials.uuid,
           "token": credentials.token
@@ -82,12 +84,12 @@ class Tentacle
 
         @listenToMeshbluMessages()
       catch error
-        console.log "I got this error: #{error.message}"
+        debug "I got this error: #{error.message}"
         @cleanup()
 
   sendMessageToMicroblu: (msg) =>
-    console.log 'sending message to microblu'
-    console.log JSON.stringify(msg, null, 2)
+    debug 'sending message to microblu'
+    debug JSON.stringify(msg, null, 2)
     @tentacleConn.write @tentacleTransformer.toProtocolBuffer(msg)
 
   cleanup: =>

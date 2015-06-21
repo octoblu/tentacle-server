@@ -2,9 +2,9 @@
   "options": {
     "pins": [
       { "action" : "digitalRead", "number": 0},
-      { "action" : "digitalRead", "number": 1},
-      { "action" : "digitalRead", "number": 2},
-      { "action" : "digitalRead", "number": 3},
+      { "action" : "digitalWrite","number": 1},
+      { "action" : "analogRead",  "number": 2},
+      { "action" : "analogWrite", "number": 3},
       { "action" : "digitalRead", "number": 4},
       { "action" : "digitalRead", "number": 5},
       { "action" : "digitalRead", "number": 6},
