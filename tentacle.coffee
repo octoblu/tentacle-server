@@ -6,13 +6,11 @@ _ = require 'lodash'
 TentacleTransformer = require 'tentacle-protocol-buffer'
 
 class Tentacle
-  constructor: (tentacleConn) ->
-    @tentacleTransformer =
-      new TentacleTransformer()
+  constructor: (tentacleConn, options={}) ->
+    @meshbluServer = options.meshbluServer || "meshblu.octoblu.com"
+    @meshbluPort = options.meshbluPort || 443
 
-    @authenticationTransformer =
-      new TentacleTransformer message: 'MeshbluAuthentication'
-
+    @tentacleTransformer = new TentacleTransformer()
     @tentacleConn = tentacleConn
 
   start: =>
@@ -26,6 +24,7 @@ class Tentacle
     return if @alreadyListening
 
     @meshbluConn.on 'ready',  @onMeshbluReady
+    @meshbluConn.on 'notReady', @onMeshbluNotReady
     @meshbluConn.on 'message', @onMeshbluMessage
     @meshbluConn.on 'config', @onMeshbluConfig
 
@@ -34,6 +33,10 @@ class Tentacle
   onMeshbluReady: =>
     debug "I'm ready!"
     @meshbluConn.whoami {}, @onMeshbluConfig
+
+  onMeshbluNotReady: =>
+    debug "I wasn't ready! Auth failed or meshblu blipped"
+    @cleanup()
 
   onMeshbluMessage: (message) =>
     debug "received message\n#{JSON.stringify(message, null, 2)}"
@@ -82,11 +85,14 @@ class Tentacle
       try
         debug "authenticating with credentials: #{JSON.stringify(credentials)}"
         @meshbluConn = meshblu.createConnection(
-          "uuid":  credentials.uuid,
-          "token": credentials.token
+          uuid:  credentials.uuid
+          token: credentials.token
+          server: @meshbluServer
+          port: @meshbluPort
         )
 
         @listenToMeshbluMessages()
+
       catch error
         debug "Authentication failed with error: #{error.message}"
         @cleanup()

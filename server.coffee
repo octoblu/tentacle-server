@@ -2,11 +2,14 @@ net = require 'net'
 _ = require 'lodash'
 through = require 'through'
 Tentacle = require './tentacle'
+debug = require('debug')('meshblu:tentacle-server')
 
-clientCount = 0
+port        = process.env.TENTACLE_SERVER_PORT ? 8111
+meshbluHost = process.env.MESHBLU_HOST
+meshbluPort =   process.env.MESHBLU_PORT
+
 server = net.createServer (client) =>
-  console.log "#{new Date()}\t client ##{++clientCount} connected."
-  tentacle = new Tentacle(client)
+  tentacle = new Tentacle client, meshbluHost: meshbluHost, meshbluPort: meshbluPort
   tentacle.start()
 
-server.listen 8111, => console.log "And we're up."
+server.listen port, => debug "And we're up. Port: #{port}"

@@ -1,10 +1,13 @@
 {
   "options": {
     "pins": [
-      { "action" : "analogRead", "number": 18},
       { "action" : "analogRead", "number": 19},
-      { "action" : "digitalWrite", "number" : 6},
-      {"action" : "digitalWrite", "number" : 13}
+      { "action" : "analogRead", "number": 18},
+      { "action" : "analogRead", "number" : 17},
+      { "action" : "analogRead", "number" : 16},
+      { "action" : "analogRead", "number" : 15},
+      { "action" : "analogRead", "number" : 14},
+      {"action" : "digitalWrite", "number" : 6}
     ]
   }
 }
