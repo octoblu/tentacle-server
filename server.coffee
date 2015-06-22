@@ -5,7 +5,7 @@ Tentacle = require './tentacle'
 
 clientCount = 0
 server = net.createServer (client) =>
-  console.log "client ##{++clientCount} connected."
+  console.log "#{new Date()}\t client ##{++clientCount} connected."
   tentacle = new Tentacle(client)
   tentacle.start()
 
