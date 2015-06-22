@@ -3,8 +3,9 @@ _ = require 'lodash'
 through = require 'through'
 Tentacle = require './tentacle'
 
+clientCount = 0
 server = net.createServer (client) =>
-  console.log 'client connected.'
+  console.log "client ##{++clientCount} connected."
   tentacle = new Tentacle(client)
   tentacle.start()
 
