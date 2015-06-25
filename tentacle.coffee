@@ -1,4 +1,4 @@
-Meshblu = require 'meshblu-websocket'
+Meshblu = require 'meshblu'
 through = require 'through'
 debug   = require('debug')('meshblu:tentacle-server')
 _ = require 'lodash'
@@ -23,17 +23,21 @@ class Tentacle
   listenToMeshbluMessages: =>
     return if @alreadyListening
 
+    @meshbluConn.on 'error', @onMeshbluError
     @meshbluConn.on 'ready',  @onMeshbluReady
     @meshbluConn.on 'notReady', @onMeshbluNotReady
     @meshbluConn.on 'message', @onMeshbluMessage
     @meshbluConn.on 'config', @onMeshbluConfig
-    @meshbluConn.on 'whoami', @onMeshbluConfig
 
     @alreadyListening = true
 
+  onMeshbluError: (error) =>
+    debug 'meshblu errored'
+    @cleanup error
+
   onMeshbluReady: =>
     debug "I'm ready!"
-    @meshbluConn.whoami()
+    @meshbluConn.whoami {}, @onMeshbluConfig
 
   onMeshbluNotReady: =>
     debug "I wasn't ready! Auth failed or meshblu blipped"
@@ -51,6 +55,7 @@ class Tentacle
     debug "got config: \n#{JSON.stringify(config, null, 2)}"
 
     @messageTentacle topic: 'config', pins: config.options.pins
+    @deviceConfigured = true
 
   onTentacleData: (data) =>
     debug "adding #{data.length} bytes from tentacle"
@@ -59,6 +64,7 @@ class Tentacle
     @parseTentacleMessage()
 
   onTentacleConnectionError: (error) =>
+    debug 'tentacle connection error'
     @cleanup error
 
   onTentacleConnectionClosed: (data) =>
@@ -74,26 +80,25 @@ class Tentacle
         @authenticateWithMeshblu(message.authentication) if message.topic == 'authentication'
 
     catch error
-      debug "I got this error: #{error.message}"
-      @cleanup()
+      debug "error parsing tentacle message"
+      @cleanup error
 
   messageMeshblu: (msg) =>
     debug "Sending message to meshblu:\n#{JSON.stringify(msg, null, 2)}"
-    return unless @meshbluConn?
-    @meshbluConn.message devices: '*', payload: msg
+    return debug "device not configured" unless @deviceConfigured?
+    @meshbluConn.message '*', payload: msg
 
   authenticateWithMeshblu: (credentials) =>
       try
         debug "authenticating with credentials: #{JSON.stringify(credentials)}"
-        @meshbluConn = new Meshblu(
+        @meshbluConn = Meshblu.createConnection(
           uuid:  credentials.uuid
           token: credentials.token
-          hostname: @meshbluUrl
+          server: @meshbluUrl
           port: @meshbluPort
         )
-        @meshbluConn.connect (error)=>
-          return @cleanup() if error?
-          @listenToMeshbluMessages()
+
+        @listenToMeshbluMessages()
 
       catch error
         debug "Authentication failed with error: #{error.message}"
@@ -106,6 +111,6 @@ class Tentacle
   cleanup: (error) =>
     debug "got an error: #{JSON.stringify(error, null, 2)}" if error?
     @tentacleConn.destroy() if @tentacleConn?
-    # @meshbluConn.disconnect() if @meshbluConn?
+    @meshbluConn.close() if @meshbluConn?
 
 module.exports = Tentacle
