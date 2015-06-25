@@ -46,7 +46,6 @@ class Tentacle
     @messageTentacle _.extend({}, message.payload, topic: 'action')
 
   onMeshbluConfig: (config) =>
-    # return @cleanup(error) if error?
     return unless config?.options?
 
     debug "got config: \n#{JSON.stringify(config, null, 2)}"
