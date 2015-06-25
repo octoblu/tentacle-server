@@ -13,7 +13,7 @@
     "coffee-script": "^1.9.3",
     "debug": "^2.2.0",
     "lodash": "^3.9.3",
-    "meshblu": "^1.22.0",
+    "meshblu-websocket": "^2.0.1",
     "tentacle-protocol-buffer": "git://github.com/octoblu/tentacle-protocol-buffer.git#master",
     "through": "^2.3.7"
   }
