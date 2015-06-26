@@ -7,8 +7,9 @@ TentacleTransformer = require 'tentacle-protocol-buffer'
 
 class Tentacle
   constructor: (tentacleConn, options={}) ->
-    @meshbluUrl = options.meshbluUrl || "meshblu.octoblu.com"
-    @meshbluPort = options.meshbluPort || 443
+    @meshbluUrl       = options.meshbluUrl
+    @meshbluPort      = options.meshbluPort
+    @meshbluProtocol  = options.meshbluProtocol
 
     @tentacleTransformer = new TentacleTransformer()
     @tentacleConn = tentacleConn
@@ -92,10 +93,11 @@ class Tentacle
       try
         debug "authenticating with credentials: #{JSON.stringify(credentials)}"
         @meshbluConn = Meshblu.createConnection(
-          uuid:  credentials.uuid
-          token: credentials.token
-          server: @meshbluUrl
-          port: @meshbluPort
+          uuid    : credentials.uuid
+          token   : credentials.token
+          server  : @meshbluUrl
+          port    : @meshbluPort
+          protocol: @meshbluProtocol
         )
 
         @listenToMeshbluMessages()
