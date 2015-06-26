@@ -7,7 +7,7 @@ TentacleTransformer = require 'tentacle-protocol-buffer'
 
 class Tentacle
   constructor: (tentacleConn, options={}) ->
-    @meshbluUrl       = options.meshbluUrl
+    @meshbluHost       = options.meshbluHost
     @meshbluPort      = options.meshbluPort
     @meshbluProtocol  = options.meshbluProtocol
 
@@ -29,6 +29,7 @@ class Tentacle
     @meshbluConn.on 'notReady', @onMeshbluNotReady
     @meshbluConn.on 'message', @onMeshbluMessage
     @meshbluConn.on 'config', @onMeshbluConfig
+    @meshbluConn.on 'whoami', @onMeshbluConfig
 
     @alreadyListening = true
 
@@ -95,9 +96,8 @@ class Tentacle
         @meshbluConn = Meshblu.createConnection(
           uuid    : credentials.uuid
           token   : credentials.token
-          server  : @meshbluUrl
+          server  : @meshbluHost
           port    : @meshbluPort
-          protocol: @meshbluProtocol
         )
 
         @listenToMeshbluMessages()

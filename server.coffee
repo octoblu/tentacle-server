@@ -11,9 +11,11 @@ MESHBLU_PROTOCOL      = process.env.MESHBLU_PROTOCOL || 'https'
 
 server = net.createServer (client) =>
   tentacle = new Tentacle( client,
-   meshbluHost:     MESHBLU_HOST
-   meshbluPort:     MESHBLU_PORT
-   meshbluProtocol: MESHBLU_PROTOCOL
+    meshbluHost:     MESHBLU_HOST
+    meshbluPort:     MESHBLU_PORT
+    meshbluProtocol: MESHBLU_PROTOCOL
+  )
+
   tentacle.start()
 
-server.listen TENTACLE_SERVER_PORT, => debug "And we're up. Port: #{port}"
+server.listen TENTACLE_SERVER_PORT, => debug "And we're up. Port: #{TENTACLE_SERVER_PORT}"

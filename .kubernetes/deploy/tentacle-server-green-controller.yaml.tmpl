@@ -1,0 +1,26 @@
+id: tentacle-server-green-controller
+kind: ReplicationController
+apiVersion: v1beta1
+labels:
+  name: tentacle-server-green
+  version: "$SHORT_COMMIT"
+desiredState:
+  replicas: 2
+  replicaSelector:
+    name: tentacle-server-green
+    version: "$SHORT_COMMIT"
+  podTemplate:
+    labels:
+      name: tentacle-server-green
+      app: tentacle-server-green
+      version: "$SHORT_COMMIT"
+    desiredState:
+      manifest:
+        version: v1beta1
+        id: tentacle-server-green
+        containers:
+          - name: tentacle-server-green
+            image: octoblu/tentacle-server:$SHORT_COMMIT
+            ports:
+              - containerPort: 80
+
