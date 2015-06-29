@@ -23,4 +23,6 @@ desiredState:
             image: octoblu/tentacle-server:$SHORT_COMMIT
             ports:
               - containerPort: 80
-
+            env:
+              - name: DEBUG
+                value: "meshblu*"

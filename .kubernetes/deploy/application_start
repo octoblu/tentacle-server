@@ -45,8 +45,6 @@ if [ -z "$KUBE_STATUS" ]; then
 fi
 
 AWS_DEFAULT_REGION=us-west-2 aws elb delete-load-balancer-listeners --load-balancer-name tentacle-server --load-balancer-ports 80
-AWS_DEFAULT_REGION=us-west-2 aws elb delete-load-balancer-listeners --load-balancer-name tentacle-server --load-balancer-ports 443
-AWS_DEFAULT_REGION=us-west-2 aws elb create-load-balancer-listeners --load-balancer-name tentacle-server --listeners Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=${NEW_PORT}
-AWS_DEFAULT_REGION=us-west-2 aws elb create-load-balancer-listeners --load-balancer-name tentacle-server --listeners Protocol=HTTPS,LoadBalancerPort=443,InstanceProtocol=HTTP,InstancePort=${NEW_PORT},SSLCertificateId=arn:aws:iam::822069890720:server-certificate/startinter.octoblu.com
+AWS_DEFAULT_REGION=us-west-2 aws elb create-load-balancer-listeners --load-balancer-name tentacle-server --listeners Protocol=TCP,LoadBalancerPort=80,InstanceProtocol=TCP,InstancePort=${NEW_PORT}
 
-AWS_DEFAULT_REGION=us-west-2 aws elb configure-health-check --load-balancer-name tentacle-server --health-check Target=HTTP:${NEW_PORT}/healthcheck,Interval=30,Timeout=5,UnhealthyThreshold=2,HealthyThreshold=2
+AWS_DEFAULT_REGION=us-west-2 aws elb configure-health-check --load-balancer-name tentacle-server --health-check Target=TCP:${NEW_PORT},Interval=30,Timeout=5,UnhealthyThreshold=2,HealthyThreshold=2

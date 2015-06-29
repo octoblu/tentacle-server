@@ -7,7 +7,7 @@ TentacleTransformer = require 'tentacle-protocol-buffer'
 
 class Tentacle
   constructor: (tentacleConn, options={}) ->
-    @meshbluHost       = options.meshbluHost
+    @meshbluHost      = options.meshbluHost
     @meshbluPort      = options.meshbluPort
     @meshbluProtocol  = options.meshbluProtocol
 
