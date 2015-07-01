@@ -10,6 +10,8 @@ class Tentacle
     @meshbluHost      = options.meshbluHost
     @meshbluPort      = options.meshbluPort
     @meshbluProtocol  = options.meshbluProtocol
+    @messageSchema = options.messageSchema || require './message-schema.json'
+    @optionsSchema = options.optionsSchema || require './options-schema.json'
 
     @tentacleTransformer = new TentacleTransformer()
     @tentacleConn = tentacleConn
@@ -52,12 +54,19 @@ class Tentacle
     @messageTentacle _.extend({}, message.payload, topic: 'action')
 
   onMeshbluConfig: (config) =>
-    return unless config?.options?
-
     debug "got config: \n#{JSON.stringify(config, null, 2)}"
+
+    return @addSchemas() unless config?.messageSchema? && config?.optionsSchema
+    return unless config?.options?
 
     @messageTentacle topic: 'config', pins: config.options.pins
     @deviceConfigured = true
+
+  addSchemas: =>
+    @meshbluConn.update
+      uuid: @credentials.uuid
+      messageSchema: @messageSchema
+      optionsSchema: @optionsSchema
 
   onTentacleData: (data) =>
     debug "adding #{data.length} bytes from tentacle"
@@ -87,18 +96,18 @@ class Tentacle
 
   messageMeshblu: (msg) =>
     debug "Sending message to meshblu:\n#{JSON.stringify(msg, null, 2)}"
-    return debug "device not configured" unless @deviceConfigured?
-    @meshbluConn.message '*', payload: msg
+    return debug "device not configured" unless @deviceConfigured
+    @meshbluConn.message '*', msg
 
   authenticateWithMeshblu: (credentials) =>
+      @credentials = credentials
       try
         debug "authenticating with credentials: #{JSON.stringify(credentials)}"
-        @meshbluConn = Meshblu.createConnection(
+        @meshbluConn = Meshblu.createConnection
           uuid    : credentials.uuid
           token   : credentials.token
           server  : @meshbluHost
           port    : @meshbluPort
-        )
 
         @listenToMeshbluMessages()
 

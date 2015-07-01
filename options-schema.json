@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "required": [
+    "pins"
+  ],
+  "properties": {
+    "pins": {
+     "title": "Pin Configuration",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "action": {
+            "title": "Action",
+            "type": "string",
+             "enum": [
+              "digitalRead" ,
+              "digitalWrite" ,
+              "analogRead",
+              "analogWrite",
+              "servoWrite",
+              "pwmWrite",
+              "i2cWrite",
+              "i2cRead",
+              "ignore"
+               ]
+          }
+        },
+        "required": [
+          "number",
+          "action"
+        ]
+      }
+    }
+  }
+}
