@@ -1,20 +1,11 @@
 {
   "options": {
+    "broadcastPins" : false,
+    "broadcastInterval": 1,
     "pins": [
-      { "action" : "analogRead", "number": 19},
-      { "action" : "analogRead", "number": 18},
-      { "action" : "analogRead", "number" : 17},
-      { "action" : "analogRead", "number" : 16},
-      { "action" : "analogRead", "number" : 15},
-      { "action" : "analogRead", "number" : 14},
-
-      { "action" : "digitalRead", "number" : 9},
-      { "action" : "digitalRead", "number" : 8},
-      { "action" : "digitalRead", "number" : 5},
-      { "action" : "digitalRead", "number" : 3},
-      { "action" : "digitalRead", "number" : 2},
-      { "action" : "digitalRead", "number" : 1},
-
+      {"action" : "analogRead", "number" : 16},
+      {"action" : "digitalWrite", "number" : 15},
+      {"action" : "digitalWrite", "number" : 14},
       {"action" : "digitalWrite", "number" : 6}
     ]
   }

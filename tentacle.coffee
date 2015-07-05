@@ -58,8 +58,10 @@ class Tentacle
 
     return @addSchemas() unless config?.messageSchema? && config?.optionsSchema
     return unless config?.options?
+    tentacleConfig = topic: 'config'
+    _.extend tentacleConfig, _.pick( config.options, 'pins', 'broadcastPins', 'broadcastInterval' )
 
-    @messageTentacle topic: 'config', pins: config.options.pins
+    @messageTentacle tentacleConfig
     @deviceConfigured = true
 
   addSchemas: =>
