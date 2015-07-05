@@ -1,6 +1,6 @@
 {
   "name": "tentacle-server-test",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "debug": "^2.2.0",
     "lodash": "^3.9.3",
     "meshblu": "^1.24.2",
-    "tentacle-protocol-buffer": "~1.0.6",
+    "tentacle-protocol-buffer": "~1.0.7",
     "through": "^2.3.7"
   }
 }
