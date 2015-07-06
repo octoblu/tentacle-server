@@ -3,5 +3,5 @@
   "token": "28d2c24dfa0a5289799a345e683d570880a3bc41",
   "server": "meshblu.octoblu.com",
   "port": 443,
-  "type": "device:microblu"
+  "type": "device:example"
 }
