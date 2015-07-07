@@ -1,6 +1,6 @@
 {
   "name": "tentacle-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Connect microcontrollers to the Internet of Things via Meshblu",
   "main": "server.js",
   "scripts": {
@@ -8,21 +8,20 @@
     "start": "node server.js"
   },
   "keywords": [
-   "meshblu",
-   "arduino",
-   "octoblu",
-   "IoT",
-   "Internet of Things"
- ],
- "author": "Octoblu, Inc. <sqrt@octoblu.com>",
+    "meshblu",
+    "arduino",
+    "octoblu",
+    "IoT",
+    "Internet of Things"
+  ],
+  "author": "Octoblu, Inc. <sqrt@octoblu.com>",
   "license": "MIT",
   "dependencies": {
     "coffee-script": "^1.9.3",
     "debug": "^2.2.0",
     "lodash": "^3.9.3",
     "meshblu": "^1.24.2",
-    "serialport": "^1.7.4",
-    "tentacle-protocol-buffer": "~1.0.7",
-    "through": "^2.3.7"
+    "meshblu-tentacle": "^1.0.2",
+    "tentacle-protocol-buffer": "^1.0.8"
   }
 }
