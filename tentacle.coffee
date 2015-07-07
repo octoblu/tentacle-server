@@ -12,9 +12,9 @@ class Tentacle
     @meshbluProtocol  = options.meshbluProtocol
     @messageSchema = options.messageSchema || require './message-schema.json'
     @optionsSchema = options.optionsSchema || require './options-schema.json'
-
     @tentacleTransformer = new TentacleTransformer()
     @tentacleConn = tentacleConn
+    @authenticateWithMeshblu(options.credentials) if options.credentials?
 
   start: =>
     debug 'start called'
@@ -123,7 +123,7 @@ class Tentacle
 
   cleanup: (error) =>
     debug "got an error: #{JSON.stringify(error, null, 2)}" if error?
-    @tentacleConn.destroy() if @tentacleConn?
+    @tentacleConn.close() if @tentacleConn?
     @meshbluConn.close() if @meshbluConn?
 
 module.exports = Tentacle

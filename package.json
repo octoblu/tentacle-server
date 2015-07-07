@@ -1,14 +1,14 @@
 {
-  "name": "tentacle-server-test",
-  "version": "1.0.1",
+  "name": "tentacle",
+  "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "tentacle.js",
   "scripts": {
     "test": "exit 0",
     "start": "node server.js"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "coffee-script": "^1.9.3",
     "debug": "^2.2.0",
