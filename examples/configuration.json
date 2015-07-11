@@ -1,7 +1,7 @@
 {
   "options": {
     "broadcastPins" : true,
-    "broadcastInterval": 150,
+    "broadcastInterval": 2500,
     "pins": [
       {"action" : "analogRead", "number" : 16},
       {"action" : "digitalWrite", "number" : 15},
