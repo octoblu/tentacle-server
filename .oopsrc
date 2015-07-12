@@ -1,0 +1,6 @@
+{
+  "elb-name": "tentacle-server",
+  "application-name": "tentacle-server",
+  "deployment-group": "master",
+  "s3-bucket": "octoblu-deploy"
+}
