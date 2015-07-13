@@ -41,6 +41,7 @@ class TentacleServer
     @tentacle.start()
 
   authenticateWithMeshblu: (credentials) =>
+    @credentials = credentials
     try
       debug "authenticating with credentials: #{JSON.stringify(credentials)}"
       @meshbluConn = Meshblu.createConnection
