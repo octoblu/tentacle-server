@@ -86,11 +86,15 @@ class TentacleServer
 
   onMeshbluConfig: (config) =>
     debug "got config: \n#{JSON.stringify(config, null, 2)}"
-    return @addSchemas() unless config?.messageSchema? && config?.optionsSchema
+    return @addSchemas() if @needToUpdateSchemas config
     return unless config?.options?
 
     @tentacle.onConfig config.options
     @deviceConfigured = true
+
+  needToUpdateSchemas: (device) =>
+    return true unless device?.messageSchema? && device?.optionsSchema && device?.options
+    false
 
   addSchemas: =>
     return unless @meshbluConn?
@@ -99,8 +103,10 @@ class TentacleServer
       uuid: @credentials.uuid
       messageSchema: @messageSchema
       optionsSchema: @optionsSchema
+      options: pins: []
 
   close: =>
+    debug "closing connections"
     @socket.close() if @socket?.close?
     @socket.end() if @socket?.end?
     @meshbluConn.close() if @meshbluConn?

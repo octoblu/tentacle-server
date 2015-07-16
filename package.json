@@ -22,6 +22,6 @@
     "lodash": "^3.9.3",
     "meshblu": "^1.24.2",
     "meshblu-tentacle": "^1.0.4",
-    "tentacle-protocol-buffer": "^1.1.3"
+    "tentacle-protocol-buffer": "^1.1.4"
   }
 }
