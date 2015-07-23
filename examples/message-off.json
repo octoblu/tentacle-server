@@ -1,8 +1,0 @@
-{
-  "devices": "b9944342-b8c7-4ca6-9d3e-074eb4706264",
-  "payload": {
-    "pins": [
-      { "action" : "digitalWrite", "number": 6, "value": 0}
-    ]
-  }
-}
