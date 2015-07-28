@@ -1,6 +1,6 @@
 {
   "name": "tentacle-server",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Connect microcontrollers to the Internet of Things via Meshblu",
   "main": "server.js",
   "scripts": {
