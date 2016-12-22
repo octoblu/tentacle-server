@@ -109,7 +109,7 @@ class TentacleServer
     debug "closing connections"
     @socket.close() if @socket?.close?
     @socket.end() if @socket?.end?
-    @meshbluConn.close() if @meshbluConn?
+    @meshbluConn.close(->) if @meshbluConn?
 
     @tentacle = null
     @meshbluConn = null

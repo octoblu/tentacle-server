@@ -1,11 +1,14 @@
 {
   "name": "tentacle-server",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Connect microcontrollers to the Internet of Things via Meshblu",
   "main": "server.js",
   "scripts": {
     "test": "exit 0",
-    "start": "node server.js"
+    "start": "node server.js",
+    "coverage": "nyc npm test",
+    "mocha:json": "env NPM_ENV=test mocha --reporter json > coverage/mocha.json",
+    "test:watch": "mocha -w -R mocha-multi --reporter-options spec=-,mocha-osx-reporter=-"
   },
   "keywords": [
     "meshblu",
@@ -23,5 +26,22 @@
     "meshblu": "^1.24.2",
     "meshblu-tentacle": "^1.0.4",
     "tentacle-protocol-buffer": "^1.1.4"
+  },
+  "devDependencies": {
+    "nyc": "^8.3.0",
+    "mocha-osx-reporter": "^0.1.2",
+    "mocha-multi": "^0.9.1",
+    "mocha": "^2.5.3"
+  },
+  "nyc": {
+    "cache": true,
+    "reporter": [
+      "text-summary",
+      "lcov",
+      "json"
+    ],
+    "extension": [
+      ".coffee"
+    ]
   }
 }

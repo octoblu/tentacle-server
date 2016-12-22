@@ -2,7 +2,7 @@ net = require 'net'
 debug = require('debug')('meshblu:tentacle-server')
 TentacleServer = require './tentacle-server'
 
-TENTACLE_SERVER_PORT  = process.env.TENTACLE_SERVER_PORT || 80
+TENTACLE_SERVER_PORT  = process.env.TENTACLE_SERVER_PORT || 1528
 MESHBLU_HOST          = process.env.MESHBLU_HOST || 'meshblu.octoblu.com'
 MESHBLU_PORT          = process.env.MESHBLU_PORT || '443'
 
